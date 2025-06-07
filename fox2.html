@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Geolocation with Photo Upload</title>
+    <title>Urban Fox Logger</title>
     <style>
         #map {
             height: 400px;
@@ -13,7 +13,7 @@
 <body>
 
 <h2>Urban Fox Logger</h2>
-<h2>Click the button to show your current location and upload a photo:</h2>
+
 <button onclick="getLocation()">Show My Location</button>
 
 <div id="map"></div>
@@ -49,15 +49,14 @@
             content: `
                 <div style="max-width: 220px;">
                     <h4>Your Location</h4>
-                    <form id="locationForm" enctype="multipart/form-data">
+                    <form id="locationForm">
                         <label>Name:</label><br>
                         <input type="text" name="name" style="width: 100%;"><br>
                         <label>Note:</label><br>
                         <textarea name="note" style="width: 100%;"></textarea><br>
-                        <label>Photo:</label><br>
-                        <input type="file" name="photo" accept="image/*"><br><br>
                         <input type="hidden" name="lat" value="${lat}">
                         <input type="hidden" name="lon" value="${lon}">
+                        <br>
                         <button type="button" onclick="saveLocation()">Save</button>
                     </form>
                 </div>
@@ -88,7 +87,7 @@
             alert("Saved!\n" + data);
         })
         .catch(err => {
-            alert("Upload failed: " + err);
+            alert("Error: " + err);
         });
     }
 </script>

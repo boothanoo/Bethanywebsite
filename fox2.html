@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Geolocation with Photo Upload</title>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Click the button to show your current location and upload a photo:</h2>
+<button onclick="getLocation()">Show My Location</button>
+
+<div id="map"></div>
+
+<script>
+    let map, marker;
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showMap, showError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function showMap(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const location = { lat: lat, lng: lon };
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: location,
+            zoom: 15
+        });
+
+        marker = new google.maps.Marker({
+            position: location,
+            map: map,
+            title: "You are here!"
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+            content: `
+                <div style="max-width: 220px;">
+                    <h4>Your Location</h4>
+                    <form id="locationForm" enctype="multipart/form-data">
+                        <label>Name:</label><br>
+                        <input type="text" name="name" style="width: 100%;"><br>
+                        <label>Note:</label><br>
+                        <textarea name="note" style="width: 100%;"></textarea><br>
+                        <label>Photo:</label><br>
+                        <input type="file" name="photo" accept="image/*"><br><br>
+                        <input type="hidden" name="lat" value="${lat}">
+                        <input type="hidden" name="lon" value="${lon}">
+                        <button type="button" onclick="saveLocation()">Save</button>
+                    </form>
+                </div>
+            `
+        });
+
+        marker.addListener("click", () => {
+            infoWindow.open(map, marker);
+        });
+
+        infoWindow.open(map, marker);
+    }
+
+    function showError(error) {
+        alert("Error getting location: " + error.message);
+    }
+
+    function saveLocation() {
+        const form = document.getElementById("locationForm");
+        const formData = new FormData(form);
+
+        fetch("save_location.php", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.text())
+        .then(data => {
+            alert("Saved!\n" + data);
+        })
+        .catch(err => {
+            alert("Upload failed: " + err);
+        });
+    }
+</script>
+
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY">
+</script>
+
+</body>
+</html>
